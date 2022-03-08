@@ -95,7 +95,7 @@ export default {
   data() {
     return {
       selected: "Home",
-      appAlive: false,
+      appAlive: true,
       glow: {
         boxShadow: "2pt 2pt 12pt 12pt rgba(12,23,122,.5)",
         borderRadius: "25px",
