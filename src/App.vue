@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    </div> -->
+    <router-view />
   </div>
 </template>
 
@@ -16,7 +16,10 @@
   text-align: center;
   color: #2c3e50;
 }
-
+body {
+  background-color: black;
+  height: 100vh;
+}
 #nav {
   padding: 30px;
 }
