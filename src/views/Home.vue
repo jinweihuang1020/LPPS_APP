@@ -9,9 +9,59 @@
         {{appAlive?"APP RUNNING":"APP OFFLINE"}}
       </div>
     </div>
+    <Divider text="腳本狀態"></Divider>
     <div class="block-gb">
-      hhh
+      <el-row :gutter="20">
+        <el-col :span="10">
+          運行腳本
+        </el-col>
+        <el-col :span="14">
+          Script 3
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="10">
+          執行中
+        </el-col>
+        <el-col :span="14">
+          是
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="10">
+          開始時間
+        </el-col>
+        <el-col :span="14">
+          2020/10/20 20:30:32
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="10">
+          結束時間
+        </el-col>
+        <el-col :span="14">
+          2020/10/21 20:30:32
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="10">
+          執行累積時間
+        </el-col>
+        <el-col :span="14">
+          24小時
+        </el-col>
+      </el-row>
     </div>
+    <Divider text="Developing..."></Divider>
+
+    <div class="block-gb">
+      Developing
+    </div>
+    <div class="block-gb">
+      <br>
+      Developing
+    </div>
+
     <mt-tabbar v-model="selected" :fixed="true" style="background-color:rgb(17,17,17);color:white">
       <mt-tab-item id="Home">
         <img slot="icon" src="../assets/home-icon.png">
@@ -33,12 +83,14 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from "@/components/HelloWorld.vue";
+import Divider from "../components/Divider.vue";
 import { Indicator } from "mint-ui";
 
 export default {
   name: "Home",
   components: {
     HelloWorld,
+    Divider,
   },
   data() {
     return {
@@ -67,7 +119,7 @@ export default {
         index = index == 12 ? 0 : index;
         this.glow.boxShadow = `0pt 0pt 2pt 2pt rgba(${
           this.appAlive ? "83, 255, 94" : "234, 73, 73"
-        },${s[index]})`; //234, 73, 73
+        },${s[index]})`;
       }, 130);
     },
   },
@@ -90,11 +142,17 @@ export default {
   border-radius: 5px;
   color: white;
   margin: 10px auto;
+  text-align: left;
+  padding: 10px;
+  font-size: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 .c-sharp-app-state {
   height: 35pt;
   font-size: 17pt;
+  padding: 1px;
 }
 
 .c-sharp-app-state div {
