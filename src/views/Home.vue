@@ -10,44 +10,44 @@
       </div>
     </div>
     <Divider text="腳本狀態"></Divider>
-    <div class="block-gb">
-      <el-row :gutter="20">
+    <div class="block-gb script-state">
+      <el-row class="row" :gutter="20">
         <el-col :span="10">
           運行腳本
         </el-col>
         <el-col :span="14">
-          Script 3
+          <span style="color:rgb(26, 230,31)">Script 3</span>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row class="row" :gutter="20">
         <el-col :span="10">
-          執行中
+          狀態
         </el-col>
-        <el-col :span="14">
-          是
+        <el-col class="val" :span="14">
+          執行結束-使用者中斷測試
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row class="row" :gutter="20">
         <el-col :span="10">
           開始時間
         </el-col>
-        <el-col :span="14">
+        <el-col class="val" :span="14">
           2020/10/20 20:30:32
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row class="row" :gutter="20">
         <el-col :span="10">
           結束時間
         </el-col>
-        <el-col :span="14">
+        <el-col class="val" :span="14">
           2020/10/21 20:30:32
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row class="row" :gutter="20">
         <el-col :span="10">
           執行累積時間
         </el-col>
-        <el-col :span="14">
+        <el-col class="val" :span="14">
           24小時
         </el-col>
       </el-row>
@@ -147,6 +147,14 @@ export default {
   font-size: 18px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+.script-state .row {
+  margin: 8px;
+}
+
+.script-state .val {
+  font-size: 16px;
+  color: whitesmoke;
 }
 
 .c-sharp-app-state {
