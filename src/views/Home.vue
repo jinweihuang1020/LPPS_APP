@@ -1,12 +1,13 @@
 <template>
   <div class="home">
+
     <div class="block-gb c-sharp-app-state">
       <div class="img">
-        <img v-bind:style="glow" v-if="appAlive" alt="Vue logo" src="../assets/glowGreen.png" height="25">
+        <img v-bind:style="glow" v-if="AppState.IsRunning" alt="Vue logo" src="../assets/glowGreen.png" height="25">
         <img v-bind:style="glow" v-else alt="Vue logo" src="../assets/glowRed.png" height="25">
       </div>
       <div v-bind:style="GetAppStateTextStyle">
-        {{appAlive?"APP RUNNING":"APP OFFLINE"}}
+        {{AppState.IsRunning?"APP RUNNING":"APP OFFLINE"}}
       </div>
     </div>
     <Divider text="腳本狀態"></Divider>
@@ -16,7 +17,7 @@
           運行腳本
         </el-col>
         <el-col :span="14">
-          <span style="color:rgb(26, 230,31)">Script 3</span>
+          <span style="color:rgb(26, 230,31)">{{ScriptState.RunningScriptName}}</span>
         </el-col>
       </el-row>
       <el-row class="row" :gutter="20">
@@ -24,7 +25,7 @@
           狀態
         </el-col>
         <el-col class="val" :span="14">
-          執行結束-使用者中斷測試
+          {{ScriptState.IsRunning?"Running":"IDLE"}}
         </el-col>
       </el-row>
       <el-row class="row" :gutter="20">
@@ -32,7 +33,8 @@
           開始時間
         </el-col>
         <el-col class="val" :span="14">
-          2020/10/20 20:30:32
+          <!-- {{moment(ScriptState.StartTime) }} -->
+          {{moment(ScriptState.StartTime).format('yyyy/MM/DD HH:mm:ss')}}
         </el-col>
       </el-row>
       <el-row class="row" :gutter="20">
@@ -40,7 +42,7 @@
           結束時間
         </el-col>
         <el-col class="val" :span="14">
-          2020/10/21 20:30:32
+          {{moment(ScriptState.EndTime).format('yyyy/MM/DD HH:mm:ss')}}
         </el-col>
       </el-row>
       <el-row class="row" :gutter="20">
@@ -48,7 +50,7 @@
           執行累積時間
         </el-col>
         <el-col class="val" :span="14">
-          24小時
+          {{ScriptState.Period}} 小時
         </el-col>
       </el-row>
     </div>
@@ -62,21 +64,6 @@
       Developing
     </div>
 
-    <mt-tabbar v-model="selected" :fixed="true" style="background-color:rgb(17,17,17);color:white">
-      <mt-tab-item id="Home">
-        <img slot="icon" src="../assets/home-icon.png">
-        HOME
-      </mt-tab-item>
-      <mt-tab-item id="tab2">
-        tab2
-      </mt-tab-item>
-      <mt-tab-item id="tab3">
-        tab3
-      </mt-tab-item>
-      <mt-tab-item id="tab4">
-        tab4
-      </mt-tab-item>
-    </mt-tabbar>
   </div>
 </template>
 
@@ -85,7 +72,11 @@
 import HelloWorld from "@/components/HelloWorld.vue";
 import Divider from "../components/Divider.vue";
 import { Indicator } from "mint-ui";
-
+import {
+  GetScriptState,
+  StartScriptStateListen,
+  StartAPPStateListen,
+} from "../api/FirebaseAPI";
 export default {
   name: "Home",
   components: {
@@ -94,8 +85,6 @@ export default {
   },
   data() {
     return {
-      selected: "Home",
-      appAlive: true,
       glow: {
         boxShadow: "2pt 2pt 12pt 12pt rgba(12,23,122,.5)",
         borderRadius: "25px",
@@ -103,13 +92,18 @@ export default {
       appStateTextStyle: {
         color: "white",
       },
+      ScriptState: {},
+      AppState: {
+        IsRunning: false,
+      },
     };
   },
   computed: {
     GetAppStateTextStyle() {
-      return { color: this.appAlive ? "white" : "red" };
+      return { color: this.AppState.IsRunning ? "white" : "red" };
     },
   },
+
   methods: {
     GlowAnimation() {
       let index = 0;
@@ -118,9 +112,33 @@ export default {
         index += 1;
         index = index == 12 ? 0 : index;
         this.glow.boxShadow = `0pt 0pt 2pt 2pt rgba(${
-          this.appAlive ? "83, 255, 94" : "234, 73, 73"
+          this.AppState.IsRunning ? "83, 255, 94" : "234, 73, 73"
         },${s[index]})`;
       }, 130);
+    },
+    async GetScriptState() {
+      this.ScriptState = await GetScriptState();
+      console.log(this.ScriptState);
+    },
+    StartScriptStateListen() {
+      let key = "ScriptStateOnChange";
+
+      this.bus.$on(key, (data) => {
+        console.log("rev", data);
+        this.ScriptState = data;
+      });
+      StartScriptStateListen(key);
+    },
+    StartAPPStateListen() {
+      let key = "APPStateOnChange";
+      this.bus.$on(key, (data) => {
+        if (data == null) return;
+        let obj = Object.entries(data);
+        if (obj.length == 0) return;
+        this.AppState = obj[0][1];
+        // console.log(key, this.AppState);
+      });
+      StartAPPStateListen(key);
     },
   },
   mounted() {
@@ -128,10 +146,14 @@ export default {
       text: "載入中...",
       spinnerType: "fading-circle",
     });
-    this.GlowAnimation();
     setTimeout(() => {
       Indicator.close();
-    }, 2000);
+    }, 1000);
+
+    this.GetScriptState();
+    this.StartScriptStateListen();
+    this.StartAPPStateListen();
+    this.GlowAnimation();
   },
 };
 </script>
@@ -148,6 +170,23 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
+
+.machine-info {
+  font-size: 9px;
+  /* background-color: gray; */
+}
+.machine-info .machine-name {
+  float: left;
+}
+
+.machine-info div {
+  margin-top: -10px;
+}
+
+.machine-info .cpu-ram {
+  float: right;
+}
+
 .script-state .row {
   margin: 8px;
 }
