@@ -12,8 +12,10 @@
         CPU:{{ AppState.CPU}}% RAM:{{AppState.RAM}} MB
       </div>
     </div>
+    <keep-alive>
+      <router-view />
+    </keep-alive>
 
-    <router-view />
     <mt-tabbar v-model="selected" :fixed="true" style="background-color:rgb(17,17,17);color:white">
       <mt-tab-item id="Home">
         <img slot="icon" src="./assets/home-icon.png">
@@ -77,9 +79,8 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   text-align: center;
   color: #2c3e50;
 }

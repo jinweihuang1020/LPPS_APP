@@ -117,8 +117,9 @@ export default {
       }, 130);
     },
     async GetScriptState() {
-      this.ScriptState = await GetScriptState();
-      console.log(this.ScriptState);
+      let state = await GetScriptState();
+      if (state != "network_error") this.ScriptState;
+      return state;
     },
     StartScriptStateListen() {
       let key = "ScriptStateOnChange";
@@ -150,10 +151,15 @@ export default {
       Indicator.close();
     }, 1000);
 
-    this.GetScriptState();
-    this.StartScriptStateListen();
-    this.StartAPPStateListen();
-    this.GlowAnimation();
+    this.GetScriptState().then((state) => {
+      if (state == "network_error") {
+        this.$message.error("網路連線異常");
+        return;
+      }
+      this.StartScriptStateListen();
+      this.StartAPPStateListen();
+      this.GlowAnimation();
+    });
   },
 };
 </script>

@@ -1,5 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue, child, get, update } from "firebase/database";
+import { getFirestore, collection, getDocs, doc } from "firebase/firestore"
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 import Bus from '../bus.js'
 
 // Set the configuration for your app
@@ -17,7 +20,27 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const provider = new GoogleAuthProvider();
+const auth = getAuth();
 const UserTable = ref(database, "UserList")
+const db = getFirestore(app);
+
+export async function Sign() {
+    return;
+    return signInWithPopup(auth, provider).then(() => {
+        return true;
+    })
+}
+
+export async function Get() {
+    console.log('try get')
+    const querySnapshot = await getDocs(collection(db, "LPPS_ACFlatness_Data"));
+    console.log(querySnapshot);
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+    });
+}
+
 
 /**取得ScriptState資料 */
 export async function GetScriptState() {
@@ -27,10 +50,10 @@ export async function GetScriptState() {
             var list = snapshot.val();
             return list;
         } else {
-            console.log("No data available");
+            console.log("No data available")
         }
     }).catch((error) => {
-        console.error(error);
+        return 'network_error';
     });
 }
 
@@ -118,5 +141,31 @@ export function StartQueryResponseListen(eventKey) {
         });
     } catch (error) {
         console.log(error)
+    }
+}
+
+
+export const firestore = {
+
+    async FetchACFlatData() {
+        console.log('try get')
+        try {
+            return getDocs(collection(db, "LPPS_ACFlatness_Data")).then((querySnapshot) => {
+                let result = [];
+                querySnapshot.forEach((doc) => {
+                    result.push({
+                        id: doc.id,
+                        data: JSON.parse(doc.data().DataJson)
+                    })
+                });
+                return result;
+            }).catch(e => {
+                alert(e)
+            })
+
+        } catch (error) {
+            alert(error)
+        }
+
     }
 }
